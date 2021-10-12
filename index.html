@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Fetch API sandbox</title>
+		<link
+			rel="stylesheet"
+			href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+			integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+			crossorigin="anonymous"
+		/>
+	</head>
+	<body>
+		<div class="container">
+			<h1 class="display-4 mb-4">Fetch API sandbox</h1>
+			<div class="d-flex">
+				<button class="btn btn-primary mr-4" id="getText">Get Text</button>
+				<button class="btn btn-warning mr-4" id="getUsers">Get Users</button>
+				<button class="btn btn-success mr-4" id="getPosts">Get API Data</button>
+			</div>
+			<hr />
+			<div id="output"></div>
+			<form id="addPost">
+				<div class="form-group">
+					<input
+						type="text"
+						class="form-control"
+						id="title"
+						placeholder="Title"
+					/>
+				</div>
+
+				<div class="form-group">
+					<textarea
+						id="body"
+						class="form-control"
+						placeholder="Body"
+					></textarea>
+				</div>
+
+				<input type="submit" class="btn btn-secondary" value="Submit" />
+			</form>
+		</div>
+
+		<script>
+			document.getElementById("getText").addEventListener("click", getText);
+			document.getElementById("getUsers").addEventListener("click", getUsers);
+			document.getElementById("getPosts").addEventListener("click", getPosts);
+			document.getElementById("addPost").addEventListener("click", addPost);
+
+			/*
+
+			 1. Named Function
+
+			   a. function function_name (parameters) {
+			       body
+			     }
+
+			     b. let/const function_name = (parameters) => {
+			       body
+			     }
+
+			 2. Anonymous Function
+
+			     a. function(parameters) {
+			       body
+			     }
+
+			     b. (parameters) => {
+			       body
+			     }
+
+			 */
+			function getText() {
+				fetch("sample.txt")
+					.then(function (res) {
+						return res.text();
+					})
+					.then(function (finalResult) {
+						document.getElementById("output").innerHTML = finalResult;
+					});
+				// fetch("sample.txt")
+				// 	.then(res => { res.text() })
+				// 	.then(body => console.log(body));
+			}
+
+			function getUsers() {
+				fetch("users.json")
+					.then(res => res.json())
+					.then(finalResult => {
+						let output = "<h2 class='mb-4'>Users</h2>";
+						finalResult.forEach(details => {
+							output += `
+			           <ul class="list-group mb-3">
+			             <li class="list-group-item" > ID: ${details.id} </li>
+			             <li class="list-group-item"> Name: ${details.name} </li>
+			             <li class="list-group-item"> Email: ${details.email} </li>
+			             </ul>
+			           `;
+						});
+						document.getElementById("output").innerHTML = output;
+					});
+			}
+
+			function getPosts() {
+				fetch("https://jsonplaceholder.typicode.com/posts")
+					.then(res => res.json())
+					.then(data => {
+						let output = "<h2 class='mb-4'>Users Posts</h2>";
+						data.forEach(User => {
+							output += `
+			           <div class="card card-body mb-3">
+									<h3>${User.title}</h3>
+								 <p>${User.body}</p>
+								</div>
+			           `;
+						});
+						document.getElementById("output").innerHTML = output;
+					});
+			}
+
+			function addPost(e) {
+				e.preventDefault();
+
+				let title = document.getElementById("title").value;
+				let body = document.getElementById("body").value;
+
+				fetch("https://jsonplaceholder.typicode.com/posts", {
+					method: "POST",
+					headers: {
+						Accept: "application/json, text/plain, */*",
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify({ title: title, body: body }),
+				})
+					.then(res => res.json())
+					.then(data => console.log(data));
+			}
+		</script>
+	</body>
+</html>
